@@ -11,6 +11,13 @@ GEM
     pry-byebug (3.7.0)
       byebug (~> 11.0)
       pry (~> 0.10)
+    rack (2.1.1)
+    rack-contrib (2.1.0)
+      rack (~> 2.0)
+    rack-test (1.1.0)
+      rack (>= 1.0, < 3)
+    roda (3.27.0)
+      rack
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -32,6 +39,9 @@ DEPENDENCIES
   byebug
   pry
   pry-byebug
+  rack-contrib
+  rack-test
+  roda
   rspec
 
 BUNDLED WITH
