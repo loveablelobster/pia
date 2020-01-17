@@ -2,7 +2,6 @@
 
 require 'rack/test'
 require 'pry-byebug'
-
 require 'openssl'
 
 ENV['RACK_ENV'] = 'test'
@@ -30,5 +29,7 @@ RSpec.configure do |config|
   config.include Rackable
 end
 
+require_relative '../../../lib/pia'
 require_relative '../../../pia'
+require_relative '../shared_context/with_middleware'
 require_relative '../shared_examples/for_requests'

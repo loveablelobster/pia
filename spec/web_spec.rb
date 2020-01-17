@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe Pia do
+RSpec.describe Pia::Pia do
   subject { last_response }
 
   let(:key) { 'testkey' }
