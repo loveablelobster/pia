@@ -1,31 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe Pia::Pia do
+  include_context 'with request'
+
   subject { last_response }
 
   let(:key) { 'testkey' }
   let(:auth_header) { [key] }
   # FIXME: duplication, also used in spec/support/helpers/rack...
 
-  let(:file) { 'spec/support/test_files/example.jpg' }
   let(:rackfile) { Rack::Test::UploadedFile.new file, 'image/jpeg' }
   let(:jp2file) { 'spec/support/test_files/example.jp2' }
   let(:rackjp2file) { Rack::Test::UploadedFile.new jp2file, 'image/jp2' }
-  let(:filename) { File.basename file }
-  let(:now) { Time.now }
-  let(:two_hours_ago) { Time.now - (2 / 24.0) }
-  let(:two_hours_ahead) { Time.now + (2 / 24.0) }
-
-  let(:username) { 'UserName' }
-
-  let :body do
-    {
-      specify_user: username,
-      filename: filename,
-      timestamp: timestamp(now),
-      file: file
-    }
-  end
 
   describe 'GET /' do
     before { get '/' }
@@ -39,8 +25,6 @@ RSpec.describe Pia::Pia do
       rack_env['HTTP_AUTHORIZATION'] = auth_header.join(':')
       post '/asset/upload/', body, rack_env
     end
-
-    let(:rack_env) { { 'CONTENT_TYPE' => 'multipart/form-data' } }
 
     context 'when the request is valid' do
       it { is_expected.to be_ok }

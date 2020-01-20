@@ -32,4 +32,6 @@ end
 require_relative '../../../lib/pia'
 require_relative '../../../pia'
 require_relative '../shared_context/with_middleware'
+require_relative '../shared_context/with_request'
+require_relative '../shared_examples/for_logging'
 require_relative '../shared_examples/for_requests'
