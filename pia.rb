@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'logger'
 require 'roda'
 require 'rack'
 require 'rack/contrib'
@@ -10,6 +11,8 @@ require_relative 'lib/pia'
 module Pia
   class Pia < Roda
     plugin :all_verbs
+    plugin :common_logger, Logger.new(STDOUT)
+    plugin Requestinterval
 
     # FIXME: move to proper settings
     Roda.opts[:key] = 'testkey' # FIXME: duplicated in spec/web_spec.rb
@@ -31,6 +34,7 @@ module Pia
 
         r.on 'upload' do
           r.post do
+            r.validate_timestamp
             "posting #{r.params['specify_user']}, #{r.params['filename']}"\
             "#{r.params['timestamp']}, #{r.params['file']}"
           end
@@ -58,6 +62,7 @@ module Pia
 
           r.delete do
             r.is 'delete' do
+              r.validate_timestamp
               "should delete #{id} filename: #{r['filename']} timestamp: #{r['timestamp']}"
             end
           end

@@ -1,10 +1,16 @@
 # frozen_string_literal: true
 
+require_relative '../pia'
+
 RSpec.describe Pia::Pia do
   include_context 'with request'
+  include_context 'with time'
 
   subject { last_response }
 
+  before { app.opts[:common_logger] = logger }
+
+  let(:app) { described_class }
   let(:key) { 'testkey' }
   let(:auth_header) { [key] }
   # FIXME: duplication, also used in spec/support/helpers/rack...
@@ -50,19 +56,28 @@ RSpec.describe Pia::Pia do
       let(:status) { 111 }
 
       context 'when it is missing' do
+        let(:log_msg) { "Request aborted. #{missing_timestamp}" }
+
         it_behaves_like 'a rack app', :post, '/asset/upload/', :not_to
+        it_behaves_like 'a logger', :post, '/asset/upload/', :warn
       end
 
       context 'when it is expired' do
         before { body[:timestamp] = timestamp two_hours_ago }
 
+        let(:log_msg) { start_with "Request aborted. #{expired_timestamp}" }
+
         it_behaves_like 'a rack app', :post, '/asset/upload/', :not_to
+        it_behaves_like 'a logger', :post, '/asset/upload/', :warn
       end
 
       context 'when it is fudged (in the future)' do
         before { body[:timestamp] = timestamp two_hours_ahead }
 
+        let(:log_msg) { start_with "Request aborted. #{future_timestamp}" }
+
         it_behaves_like 'a rack app', :post, '/asset/upload/', :not_to
+        it_behaves_like 'a logger', :post, '/asset/upload/', :warn
       end
     end
 

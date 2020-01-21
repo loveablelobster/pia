@@ -7,15 +7,15 @@ module Pia
   #
   # ===== Examples
   #
-  #   Timespan.in_seconds('3h')         # => 10800 seconds
-  #   Timespan.in_seconds('30m')        # => 1800 seconds
-  #   Timespan.in_seconds('15s')        # => 15 seconds
-  #   Timespan.in_seconds('1h 15m')     # => 4500 seconds
-  #   Timespan.in_seconds('1m 30s')     # => 90 seconds
-  #   Timespan.in_seconds('1h 5s')      # => 3605 seconds
-  #   Timespan.in_seconds('1h 20m 45s') # => 4845 seconds
+  #   Duration.in_seconds('3h')         # => 10800 seconds
+  #   Duration.in_seconds('30m')        # => 1800 seconds
+  #   Duration.in_seconds('15s')        # => 15 seconds
+  #   Duration.in_seconds('1h 15m')     # => 4500 seconds
+  #   Duration.in_seconds('1m 30s')     # => 90 seconds
+  #   Duration.in_seconds('1h 5s')      # => 3605 seconds
+  #   Duration.in_seconds('1h 20m 45s') # => 4845 seconds
   #
-  class Timespan
+  class Duration
     # Regular expression for String parsing.
     PATTERN = /^(?<h>\d+\s*h)?\s*(?<m>\d+\s*m)?\s*(?<s>\d+\s*s)?$/.freeze
 
@@ -37,10 +37,25 @@ module Pia
     # Parses <tt>interval_string</tt> and returns the total number of seconds
     # (Integer).
     #
+    # Returns +nil+ if <tt>interval_string</tt> is nil.
+    #
     # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt> where
     # +i+ are integer values.
     def self.in_seconds(interval_string)
+      return unless interval_string
+
       new(interval_string).to_seconds
+    end
+
+    # Parses <tt>interval_string</tt> and returns the total number of seconds
+    # (Integer).
+    #
+    # Returns +0+ if <tt>interval_string</tt> is nil.
+    #
+    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt> where
+    # +i+ are integer values.
+    def self.in_seconds!(interval_string)
+      self.in_seconds(interval_string).to_i
     end
 
     # Returns a hash with format <tt>{ h: Integer, m: Integer, s: Integer }</tt>

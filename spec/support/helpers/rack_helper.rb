@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'rack/test'
+require 'roda'
 require 'pry-byebug'
 require 'openssl'
 
@@ -9,8 +10,10 @@ ENV['RACK_ENV'] = 'test'
 module Rackable
   include Rack::Test::Methods
 
-  def app
-    described_class
+  def _app(&block)
+    c = Class.new Roda
+    c.class_eval(&block)
+    c
   end
 
   def signature(file, time, user = nil)
@@ -21,7 +24,7 @@ module Rackable
   end
 
   def timestamp(time)
-    time.utc.strftime '%Y-%m-%d %H:%M:%S.%6L'
+    time.strftime '%Y-%m-%d %H:%M:%S.%6L %Z'
   end
 end
 
@@ -30,8 +33,7 @@ RSpec.configure do |config|
 end
 
 require_relative '../../../lib/pia'
-require_relative '../../../pia'
-require_relative '../shared_context/with_middleware'
 require_relative '../shared_context/with_request'
+require_relative '../shared_context/with_time'
 require_relative '../shared_examples/for_logging'
 require_relative '../shared_examples/for_requests'

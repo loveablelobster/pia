@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative '../../support/shared_examples/for_timespans'
+require_relative '../../../support/shared_examples/for_timespans'
 
 module Pia
-  RSpec.describe Timespan do
+  RSpec.describe Duration do
     describe '.in_seconds' do
       subject(:span) { described_class.in_seconds timestring }
 
@@ -27,6 +27,30 @@ module Pia
         it 'calculates the total number of seconds for the string' do
           expect(span).to be 4845
         end
+      end
+
+      context 'without a string' do
+        let(:timestring) { nil }
+
+        it { is_expected.to be_nil }
+      end
+    end
+
+    describe '.in_seconds!' do
+      subject(:span) { described_class.in_seconds! timestring }
+      
+      context 'with a string' do
+        let(:timestring) { '1h 20m 45s' }
+
+        it 'calculates the total number of seconds for the string' do
+          expect(span).to be 4845
+        end
+      end
+
+      context 'without a string' do
+        let(:timestring) { nil }
+
+        it { is_expected.to be 0 }
       end
     end
 
