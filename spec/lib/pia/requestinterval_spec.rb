@@ -26,7 +26,7 @@ RSpec.describe Pia::Requestinterval do
   end
 
   context 'with an invalid timestamp' do
-    let(:message) { '{"message":"Bad request. Ignored."}' }
+    let(:message) { bad_request_msg }
     let(:status) { 111 }
 
     context 'when the timestamp is expired' do

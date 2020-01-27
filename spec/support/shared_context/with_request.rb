@@ -20,6 +20,7 @@ RSpec.shared_context 'with request', shared_context: :metadata do
     }
   end
 
+  let(:bad_request_msg) { '{"message":"Bad request. Ignored."}' }
   # ===== Mocks
   let(:success) { 'Success!' }
   
