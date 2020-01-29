@@ -37,10 +37,10 @@ module Pia
       # Returns +nil+ if there is no timestamp.
       def timestamp
         ts = params[roda_class.opts[:timestamp_key]]
-        return unless ts
+        return if ts.nil? || ts.empty?
 
         return ts if /[A-Z]{3}$/.match? ts
-        
+
         ts + ' UTC'
       end
 
