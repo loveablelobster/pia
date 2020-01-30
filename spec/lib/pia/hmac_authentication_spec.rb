@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
 RSpec.describe Pia::HmacAuthentication do
+  include_context 'with files'
   include_context 'with request'
   include_context 'with time'
 
   let :app do
     _app do
-      plugin Pia::HmacAuthentication, key: 'testkey', secret: 'testsecret'
+      plugin Pia::HmacAuthentication,
+        hmac_key: 'testkey',
+        hmac_secret: 'testsecret',
+        hmac_separator: '|',
+        hmac_hash_function: 'SHA256'
       route do |r|
         r.on do
           r.authenticate_upload

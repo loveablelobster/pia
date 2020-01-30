@@ -5,11 +5,6 @@ RSpec.shared_context 'with request', shared_context: :metadata do
   let(:key) { 'testkey' }
   let(:secret) { 'testsecret' }
 
-  # ===== Files
-  let(:file) { 'spec/support/test_files/example.jpg' }
-  let(:filename) { File.basename file }
-  let(:rackfile) { Rack::Test::UploadedFile.new file, 'image/jpeg' }
-
   # ===== Request Headers
   let(:rack_env) { { 'CONTENT_TYPE' => 'multipart/form-data' } }
   let(:auth_header) { [key] }

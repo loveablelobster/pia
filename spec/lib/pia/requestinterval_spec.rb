@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 RSpec.describe Pia::Requestinterval do
+  include_context 'with files'
   include_context 'with request'
   include_context 'with time'
 

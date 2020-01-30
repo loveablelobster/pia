@@ -20,7 +20,7 @@ module Rackable
     filename = user ? File.basename(file) : file
     msg = [filename, user, time].compact
     msg.push Digest::MD5.file(file).hexdigest if user
-    OpenSSL::HMAC.hexdigest 'SHA512', 'testwhatever', msg.join("\n")
+    OpenSSL::HMAC.hexdigest 'SHA512', 'testsecret', msg.join("\n")
   end
 
   def timestamp(time)
@@ -33,6 +33,7 @@ RSpec.configure do |config|
 end
 
 require_relative '../../../lib/pia'
+require_relative '../shared_context/with_files'
 require_relative '../shared_context/with_request'
 require_relative '../shared_context/with_time'
 require_relative '../shared_examples/for_logging'

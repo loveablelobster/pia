@@ -1,12 +1,17 @@
 # frozen_string_literal: true
 
+require_relative 'hmac_authentication/signature'
+
 module Pia
   #
   module HmacAuthentication
 
     def self.configure(app, **opts)
-      app.opts[:key] = opts.fetch :key
-      app.opts[:secret] = opts.fetch :secret
+      app.opts[:hmac_key] = opts.fetch :hmac_key
+      app.opts[:hmac] ||= {}
+      app.opts[:hmac][:secret] = opts.fetch :hmac_secret
+      app.opts[:hmac][:separator] = opts.fetch :hmac_separator, nil
+      app.opts[:hmac][:hash_function] = opts.fetch :hmac_hash_function, nil
     end
 
     # Methods included in the request.
@@ -15,23 +20,21 @@ module Pia
       def authenticate_upload
         auth_header = fetch_header 'HTTP_AUTHORIZATION'
 
-        # handle by a class the creates the signature
-        keys = %w[file filename specify_user timestamp]
-        file, filename, username = keys.collect { |key| params.fetch key }
+        keys = %w[filename specify_user timestamp]
+        signature = Signature.from_params(params, keys, roda_class.opts[:hmac])
+          .with_file params.fetch('file')['tempfile']
       rescue KeyError => e
         if e.key == 'HTTP_AUTHORIZATION'
-          roda_class.opts[:common_logger]
-            &.warn 'Attempt to upload file without HTTP_AUTHORIZATION header'
-            halt [403,
-                  { 'Content-Type' => 'text/html' },
-                  { message: 'Forbidden!' }.to_json]
+          log_msg = 'Attempt to upload file without HTTP_AUTHORIZATION header'
+          status = 403
+          msg = { message: 'Forbidden!' }
         else
-          roda_class.opts[:common_logger]
-            &.warn "Request aborted. Missing element: #{e.key}."
-          halt [111,
-                { 'Content-Type' => 'text/html' },
-                { message: 'Bad request. Ignored.' }.to_json]
+          log_msg = "Request aborted. Missing element: #{e.key}."
+          status = 111
+          msg = { message: 'Bad request. Ignored.' }
         end
+        roda_class.opts[:common_logger]&.warn log_msg
+        halt [status, { 'Content-Type' => 'text/html' }, msg.to_json]
       end
     end
   end
