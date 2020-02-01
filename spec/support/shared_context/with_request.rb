@@ -4,10 +4,11 @@ RSpec.shared_context 'with request', shared_context: :metadata do
   # ===== Authentication
   let(:key) { 'testkey' }
   let(:secret) { 'testsecret' }
+  let(:hmac) { signature file, timestamp(now), username }
 
   # ===== Request Headers
   let(:rack_env) { { 'CONTENT_TYPE' => 'multipart/form-data' } }
-  let(:auth_header) { [key] }
+  let(:auth_header) { [key, hmac] }
 
   # ===== Request Body
   let(:username) { 'UserName' }

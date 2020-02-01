@@ -20,7 +20,7 @@ module Rackable
     filename = user ? File.basename(file) : file
     msg = [filename, user, time].compact
     msg.push Digest::MD5.file(file).hexdigest if user
-    OpenSSL::HMAC.hexdigest 'SHA512', 'testsecret', msg.join("\n")
+    OpenSSL::HMAC.hexdigest 'SHA256', 'testsecret', msg.join('|')
   end
 
   def timestamp(time)

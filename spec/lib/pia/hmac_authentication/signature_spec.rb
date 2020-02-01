@@ -11,6 +11,8 @@ RSpec.describe Pia::HmacAuthentication::Signature do
                         separator: separator
   end
 
+  let(:bare_signature) { described_class.new secret: secret }
+
   # FIXME: move to from here and with_request to with_auth shared context
   let(:secret) { 'testsecret' }
 
@@ -87,8 +89,6 @@ RSpec.describe Pia::HmacAuthentication::Signature do
   end
 
   describe 'file_md5=' do
-    let(:bare_signature) { described_class.new secret: secret }
-
     context 'with a file' do
       it do
         expect { bare_signature.file_md5 = file }
@@ -98,19 +98,9 @@ RSpec.describe Pia::HmacAuthentication::Signature do
     end
 
     context 'without a file' do
-      context 'without a block' do
-        it do
-          expect { hashed_signature.with_file nil }
-            .not_to change(bare_signature, :file_md5)
-        end
-      end
-
-      context 'with a block' do
-        it do
-          expect { bare_signature.with_file(nil) { file } }
-            .to change(bare_signature, :file_md5)
-            .from(nil).to checksum
-        end
+      it do
+        expect { hashed_signature.file_md5 = nil }
+          .not_to change(bare_signature, :file_md5)
       end
     end
   end
@@ -135,7 +125,13 @@ RSpec.describe Pia::HmacAuthentication::Signature do
                                 %w[poo bar].join(separator)
       end
 
-      it {is_expected.to be_falsey }
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when digest to compare with is nil' do
+      let(:digest) { nil }
+
+      it { is_expected.to be_falsey }
     end
   end
 
@@ -150,6 +146,20 @@ RSpec.describe Pia::HmacAuthentication::Signature do
       let(:file_param) { file }
 
       it { is_expected.to eq elements.push(checksum).join(separator) }
+    end
+  end
+
+  describe '#with_file' do
+    subject(:sig_with_file) { bare_signature.with_file file }
+
+    it do
+      expect { sig_with_file }
+        .to change(bare_signature, :file_md5)
+        .from(nil).to checksum
+    end
+
+    it 'returns self' do
+      expect(sig_with_file).to be bare_signature
     end
   end
 end

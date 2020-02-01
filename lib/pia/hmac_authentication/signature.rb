@@ -59,7 +59,6 @@ module Pia
 
       # Adds the <em>MD5 checksum</em> for file to the message body.
       def file_md5=(file)
-        file ||= yield if block_given?
         return unless file
 
         @file_md5 = Digest::MD5.file(file).hexdigest
@@ -73,6 +72,8 @@ module Pia
 
       # Securely compares the #hexdigest of +self+ to another HMAC hexdigest.
       def match?(other)
+        return unless other
+
         Rack::Utils.secure_compare hexdigest, other
       end
 
@@ -82,7 +83,10 @@ module Pia
         [elements, file_md5].flatten.compact.join separator
       end
 
-      alias with_file file_md5=
+      def with_file(file)
+        self.file_md5 = file
+        self
+      end
     end
   end
 end

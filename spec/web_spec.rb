@@ -106,7 +106,7 @@ RSpec.describe Pia::Pia do
       end
 
       let(:message) { '{"message":"Forbidden!"}' }
-      let(:status) { 403 }
+      let(:status) { 401 }
 
       it_behaves_like 'a rack app', :post, '/asset/upload', :not_to
     end

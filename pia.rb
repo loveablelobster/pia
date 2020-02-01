@@ -11,8 +11,14 @@ require_relative 'lib/pia'
 module Pia
   class Pia < Roda
     plugin :all_verbs
-    plugin :common_logger, Logger.new(STDOUT)
+    plugin :common_logger, ::Logger.new(STDOUT)
+    plugin Logger
     plugin Requestinterval
+    plugin HmacAuthentication,
+           hmac_key: 'testkey',
+           hmac_secret: 'testsecret',
+           hmac_separator: '|',
+           hmac_hash_function: 'SHA256'
 
     # FIXME: move to proper settings
     Roda.opts[:key] = 'testkey' # FIXME: duplicated in spec/web_spec.rb
@@ -34,7 +40,7 @@ module Pia
 
         r.on 'upload' do
           r.post do
-            r.validate_timestamp
+            r.validate_timestamp.authenticate_upload
             "posting #{r.params['specify_user']}, #{r.params['filename']}"\
             "#{r.params['timestamp']}, #{r.params['file']}"
           end
