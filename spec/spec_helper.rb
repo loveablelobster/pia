@@ -97,5 +97,34 @@ RSpec.configure do |config|
   # FIXME: Remove this
   config.warnings = false
 
+  TESTDIR = 'spec/support/test_files'
+  IMGSTORE = File.join TESTDIR, 'imgstore'
+  DOCSTORE = File.join TESTDIR, 'docstore'
+  WORKDIR = File.join TESTDIR, 'workdir'
+  LIBDIR = File.join TESTDIR, 'custom_libs'
+
+  require_relative 'support/custom_matchers'
   require_relative 'support/helpers/rack_helper'
+
+  config.before(:suite) do
+    [WORKDIR, IMGSTORE, DOCSTORE].each do |dir|
+      FileUtils.mkdir dir unless File.exist? dir
+    end
+  end
+
+  config.after(:each) do
+    [IMGSTORE, DOCSTORE].each do |dir|
+      link = File.join(dir, '.current_store_path')
+      FileUtils.rm link if File.exists? link
+      Dir.glob(File.join(dir, '*')).each do |subdir|
+        FileUtils.rm_r subdir
+      end
+    end
+  end
+
+  config.after(:suite) do
+    [WORKDIR, IMGSTORE, DOCSTORE].each do |dir|
+      FileUtils.rm_r dir if File.exist? dir
+    end
+  end
 end

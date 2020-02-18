@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Pia
-  # Timespans are initialized with a String that specifies a duration in simple
+  # Durations are initialized with a String that specifies a duration in simple
   # a simple notation using integers and the tokens +h+ (hours), +m+ (minutes),
   # and +s+ (seconds) and can calculate the duration in seconds.
   #
@@ -26,8 +26,8 @@ module Pia
     #
     # Creates a new instacne for <tt>interval_string</tt>.
     #
-    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt> where
-    # +i+ are integer values.
+    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt>
+    # where +i+ are integer values.
     def initialize(str)
       interval_string = str.strip.downcase
       @notation_pattern = PATTERN
@@ -39,8 +39,8 @@ module Pia
     #
     # Returns +nil+ if <tt>interval_string</tt> is nil.
     #
-    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt> where
-    # +i+ are integer values.
+    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt>
+    # where +i+ are integer values.
     def self.in_seconds(interval_string)
       return unless interval_string
 
@@ -52,10 +52,10 @@ module Pia
     #
     # Returns +0+ if <tt>interval_string</tt> is nil.
     #
-    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt> where
-    # +i+ are integer values.
+    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt>
+    # where +i+ are integer values.
     def self.in_seconds!(interval_string)
-      self.in_seconds(interval_string).to_i
+      in_seconds(interval_string).to_i
     end
 
     # Returns a hash with format <tt>{ h: Integer, m: Integer, s: Integer }</tt>
@@ -88,8 +88,8 @@ module Pia
 
     # Parses <tt>interval_string</tt>.
     #
-    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt> where
-    # +i+ are integer values.
+    # <tt>interval_string</tt> should use the notation <tt>i h i m i s</tt>
+    # where +i+ are integer values.
     #
     # Parsing is case-insensitive and whitespace tolerant.
     def parse(interval_string)

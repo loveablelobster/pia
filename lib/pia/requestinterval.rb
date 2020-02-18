@@ -54,10 +54,9 @@ module Pia
         ts = ValidatingTimestamp
              .from_string(timestamp,
                           parse_format: roda_class.opts[:time_parse_fmt],
-                          formatter: roda_class.opts[:time_print_fmt],
                           validity: expiration_time)
         return self if ts.valid?
-        
+
         roda_class.opts[:common_logger]&.warn "Request aborted. #{ts}"
         halt [111,
               { 'Content-Type' => 'text/html' },

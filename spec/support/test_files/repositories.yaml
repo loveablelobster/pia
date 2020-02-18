@@ -1,0 +1,31 @@
+---
+workdir: spec/support/test_files/workdir
+libs:
+  - spec/support/test_files/custom_libs
+repositories:
+  -
+    name: Image Store
+    media_types:
+      - image/jpeg
+      - image/tiff
+    file_processing:
+      scale:
+        width: 1280
+        height: 1024
+      exif_redaction:
+        redact_tags:
+          - Software
+          - CreatorTool
+    storage_directory: spec/support/test_files/imgstore
+  -
+    name: Document Store
+    media_types:
+      - application/pdf
+    file_processing:
+    storage_directory: spec/support/test_files/docstore
+    storage_options:
+      nesting_levels:
+      folder_limit:
+  -
+    name: Custom Store
+    repository_class: custom_store

@@ -4,6 +4,8 @@ source 'https://rubygems.org'
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
+gem 'file_pipeline'
+gem 'folder_stash'
 gem 'rack-contrib'
 gem 'roda'
 
