@@ -22,18 +22,7 @@ RSpec.describe Pia::HmacAuthentication do
     end
   end
 
-  def self.respond_and_log(verb, route)
-    before do
-      rack_env['HTTP_AUTHORIZATION'] = auth_header.join(':') if auth_header
-    end
-
-    it_behaves_like 'a rack app', verb, route, :not_to
-    it_behaves_like 'a logger', verb, route, :<<
-  end
-
-  before do
-    app.opts[:common_logger] = logger
-  end
+  before { app.opts[:common_logger] = logger }
 
   context 'when posting to upload' do
     context 'with valid signature, data, and file' do
