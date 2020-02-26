@@ -48,7 +48,7 @@ module Pia
       #
       # Keys must be strings.
       def self.from_params(params, keys, options)
-        signature = Signature.new **options
+        signature = Signature.new(**options)
         keys.each_with_object(signature) { |key, sig| sig << params.fetch(key) }
       end
 

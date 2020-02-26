@@ -1,0 +1,11 @@
+---
+development:
+production:
+test:
+  hosts:
+    - '127.0.0.1'
+    - '0:0:0:0:0:0:0:1'
+  hmac_separator: '|'
+  hmac_hash_function: 'SHA256'
+  request_exp_time: 30s
+  repository_config: 'spec/support/test_files/dummy_repos.yaml'

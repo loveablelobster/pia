@@ -38,9 +38,10 @@ module Pia
     # * <tt>:repositories</tt> - Array of repository objects to use with the
     #   plugin.
     def self.configure(app, **opts)
-      conf = opts[:repository_config]
-      repos = opts[:repositories] || RepositoryStack.new(conf).repositories
-      app.opts[:repositories] = repos
+      app.opts[:repository_config] ||= opts[:repository_config]
+      app.opts[:repositories] ||=
+        opts[:repositories] ||
+        RepositoryStack.new(app.opts[:repository_config]).repositories
     end
 
     # Registers the Logger plugin with +app+.
@@ -117,6 +118,8 @@ module Pia
         params.dig property, :type
       end
 
+      # Halts the request with details about the media type. To be called when
+      # the #file_type is not supported.
       def unsupported_media_type
         msg = "Image format #{file_type} is not supported."\
               " Supported formats are: #{roda_class.supported_media_types}."

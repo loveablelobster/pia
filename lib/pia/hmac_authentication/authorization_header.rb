@@ -36,7 +36,7 @@ module Pia
         @header = header
         @separator = separator
         @key, @signature = catch(:invalid) do
-          elements = header.split(separator).delete_if { |e| e.empty? }
+          elements = header.split(separator).delete_if(&:empty?)
           throw :invalid unless elements.size == 2
           elements
         end

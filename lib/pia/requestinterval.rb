@@ -23,10 +23,15 @@ module Pia
       # FIXME: move the Duration.in_seconds parsing to the settings facility one
       # we have one.
       duration = Duration.in_seconds(opts[:request_exp_time]) || 30
-      app.opts[:request_exp_time] = duration
-      app.opts[:timestamp_key] = opts.fetch :timestamp_key, 'timestamp'
-      app.opts[:time_parse_fmt] = opts.fetch :time_parse_fmt, PARSE_FMT
-      app.opts[:time_print_fmt] = opts.fetch :time_print_fmt, PRINT_FMT
+      app.opts[:request_exp_time] ||= duration
+      app.opts[:timestamp_key] ||= opts.fetch :timestamp_key, 'timestamp'
+      app.opts[:time_parse_fmt] ||= opts.fetch :time_parse_fmt, PARSE_FMT
+      app.opts[:time_print_fmt] ||= opts.fetch :time_print_fmt, PRINT_FMT
+    end
+
+    # Registers the Logger plugin with +app+.
+    def self.load_dependencies(app, **_opts)
+      app.plugin Logger
     end
 
     # Methods included in the request.

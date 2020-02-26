@@ -28,4 +28,4 @@ repositories:
       folder_limit:
   -
     name: Custom Store
-    repository_class: custom_store
+    repository_class: dummy_store

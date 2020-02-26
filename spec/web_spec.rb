@@ -120,8 +120,8 @@ RSpec.describe Pia::Pia do
       end
 
       let :message do
-        '{"message":"Image format image/jp2 is not supported. Supported'\
-        ' formats are: [\"image/jpeg\", \"image/tiff\", \"image/png\"]"}'
+        'Image format image/jp2 is not supported. Supported formats are:'\
+        ' ["image/jpeg", "image/tiff"].'
       end
 
       let(:status) { 333 }

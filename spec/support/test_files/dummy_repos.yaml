@@ -1,0 +1,8 @@
+---
+workdir: spec/support/test_files/workdir
+libs:
+  - spec/support/test_files/custom_libs
+repositories:
+  -
+    name: Custom Store
+    repository_class: dummy_store

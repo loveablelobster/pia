@@ -73,7 +73,7 @@ RSpec.describe Pia::RepositoryStack::RepositoryStack do
       expect(stack_repositories)
         .to contain_exactly an_instance_of(Pia::RepositoryStack::Repository),
                             an_instance_of(Pia::RepositoryStack::Repository),
-                            an_instance_of(CustomStore)
+                            an_instance_of(DummyStore)
     end
   end
 

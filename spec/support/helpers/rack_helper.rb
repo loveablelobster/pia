@@ -6,6 +6,8 @@ require 'pry-byebug'
 require 'openssl'
 
 ENV['RACK_ENV'] = 'test'
+ENV['pia_key'] = 'testkey'
+ENV['pia_secret'] = 'testsecret'
 
 module Rackable
   include Rack::Test::Methods
@@ -28,8 +30,40 @@ module Rackable
   end
 end
 
+TESTDIR = 'spec/support/test_files'
+IMGSTORE = File.join TESTDIR, 'imgstore'
+DOCSTORE = File.join TESTDIR, 'docstore'
+WORKDIR = File.join TESTDIR, 'workdir'
+LIBDIR = File.join TESTDIR, 'custom_libs'
+
+[WORKDIR, IMGSTORE, DOCSTORE].each do |dir|
+  FileUtils.mkdir dir unless File.exist? dir
+end
+
 RSpec.configure do |config|
   config.include Rackable
+
+  config.before(:suite) do
+    [WORKDIR, IMGSTORE, DOCSTORE].each do |dir|
+      FileUtils.mkdir dir unless File.exist? dir
+    end
+  end
+
+  config.after(:each) do
+    [IMGSTORE, DOCSTORE].each do |dir|
+      link = File.join(dir, '.current_store_path')
+      FileUtils.rm link if File.exists? link
+      Dir.glob(File.join(dir, '*')).each do |subdir|
+        FileUtils.rm_r subdir
+      end
+    end
+  end
+
+  config.after(:suite) do
+    [WORKDIR, IMGSTORE, DOCSTORE].each do |dir|
+      FileUtils.rm_r dir if File.exist? dir
+    end
+  end
 end
 
 require_relative '../../../lib/pia'
