@@ -27,7 +27,8 @@ RSpec.shared_context 'with request', shared_context: :metadata do
       specify_user: username,
       filename: filename,
       timestamp: timestamp(now),
-      file: rackfile
+      file: rackfile,
+      is_public: false
     }
   end
 

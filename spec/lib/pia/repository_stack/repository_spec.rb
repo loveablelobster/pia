@@ -22,7 +22,8 @@ RSpec.describe Pia::RepositoryStack::Repository do
       media_types: mimes,
       file_processing: {
         'scale' => { width: 1280, height: 1024 },
-        'ptiff_conversion' => { tile_width: 64, tile_height: 64 }
+        'ptiff_conversion' => { tile_width: 64, tile_height: 64 },
+        'exif_recovery' => {},
       },
       storage_directory: storedir,
       storage_options: {
@@ -53,7 +54,7 @@ RSpec.describe Pia::RepositoryStack::Repository do
   describe '#processing' do
     subject { repo.processing }
 
-    let(:operations) { contain_exactly scale_op, ptiff_op }
+    let(:operations) { contain_exactly scale_op, ptiff_op, exif }
 
     let :ptiff_op do
       a_kind_of(FilePipeline::FileOperations::PtiffConversion) &
@@ -66,7 +67,11 @@ RSpec.describe Pia::RepositoryStack::Repository do
         have_attributes(options: { width: 1280, height: 1024,
                                    method: :scale_by_bounds })
     end
- 
+
+    let :exif do
+      a_kind_of(FilePipeline::FileOperations::ExifRecovery)
+    end
+
     it { is_expected.to be_a FilePipeline::Pipeline }
     it { is_expected.to have_attributes file_operations: operations }
   end

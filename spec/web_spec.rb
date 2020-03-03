@@ -2,7 +2,7 @@
 
 require_relative '../pia'
 
-RSpec.describe Pia::Pia do
+RSpec.describe PiaApp do
   include_context 'with files'
   include_context 'with request'
   include_context 'with time'
@@ -30,15 +30,38 @@ RSpec.describe Pia::Pia do
     before do
       auth_header[1] = signature file, timestamp(now), username
       rack_env['HTTP_AUTHORIZATION'] = auth_header.join(':')
-      post '/asset/upload/', body, rack_env
     end
 
     context 'when the request is valid' do
-      it { is_expected.to be_ok }
+      before { Asset.destroy_all }
 
-      it 'creates an asset'
+      let :response_body do
+        { asset_identifier: 'stored_file',
+          resource_identifier: 'path/to/stored_file.jpg',
+          mime_type: 'image/jpeg',
+          capture_device: 'Ihagee, EXAKTA Varex IIB, Carl Zeiss Jena Pancolar 2/50',
+          file_created_date: '2020-03-06 00:00:00.000000',
+          date_imaged: '1976-05-27T00:00:00.000Z',
+          copyright_holder: 'The photographer',
+          checksum: 'checksum' }.to_json
+      end
 
-      it 'returns JSON'
+      it do
+        post 'asset/upload/', body, rack_env
+        expect(last_response).to be_ok
+      end
+
+      it 'creates an asset' do
+        expect { post 'asset/upload/', body, rack_env }
+          .to change(Asset, :all)
+          .from(be_empty)
+          .to include a_kind_of(Asset)
+      end
+
+      it 'returns JSON' do
+        post 'asset/upload/', body, rack_env
+        expect(last_response.body).to eq response_body
+      end
     end
 
     context 'when request is from an unknown host' do

@@ -6,6 +6,7 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'file_pipeline'
 gem 'folder_stash'
+gem 'mongoid'
 gem 'rack-contrib'
 gem 'roda'
 
@@ -16,6 +17,7 @@ group :development do
 end
 
 group :test do
+  gem 'mongoid-rspec'
   gem 'rack-test'
   gem 'rspec'
 end

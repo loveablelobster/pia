@@ -4,5 +4,8 @@ libs:
   - spec/support/test_files/custom_libs
 repositories:
   -
-    name: Custom Store
+    name: Test Store
     repository_class: dummy_store
+  -
+    name: Test Backup
+    repository_class: dummy_backup
