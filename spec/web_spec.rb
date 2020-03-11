@@ -35,17 +35,6 @@ RSpec.describe PiaApp do
     context 'when the request is valid' do
       before { Asset.destroy_all }
 
-      let :response_body do
-        { asset_identifier: 'stored_file',
-          resource_identifier: 'path/to/stored_file.jpg',
-          mime_type: 'image/jpeg',
-          capture_device: 'Ihagee, EXAKTA Varex IIB, Carl Zeiss Jena Pancolar 2/50',
-          file_created_date: '2020-03-06 00:00:00.000000',
-          date_imaged: '1976-05-27T00:00:00.000Z',
-          copyright_holder: 'The photographer',
-          checksum: 'checksum' }.to_json
-      end
-
       it do
         post 'asset/upload/', body, rack_env
         expect(last_response).to be_ok

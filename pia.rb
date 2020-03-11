@@ -52,41 +52,8 @@ class PiaApp < Roda
       # TODO: document: upload params contains 'is_public' element
       r.on 'upload' do
         r.post do
-          is_public = true
           r.validate_timestamp.authenticate_upload
-          stored = store r
-          primary_store, others = stored.keys
-          primary_stored, file_meta, checksum = stored[primary_store]
-          stored_id = File.basename primary_stored, '.*'
-          mime = file_meta.find { |metaset| metaset['MIMEType'] }
-          mime ||= Rack::Mime.mime_type(File.extname(primary_stored))
-          others_stored = stored.slice(*others)
-                                .transform_values(&:first)
-                                .map do |k, v|
-            repo = Repository.find_or_create_by name: k
-            { repository: repo, uri: v }
-          end
-
-          primary_store = Repository.find_or_create_by name: primary_store
-
-          asset = Asset.create!(asset_id: stored_id,
-                               identifier: primary_stored,
-                               public: r.params['is_public'],
-                               filename: r.filename,
-                               media_type: mime,
-                               md5sum: checksum,
-                               repository: primary_store,
-                               file_metadata_sets: file_meta,
-                               copies: others_stored)
-
-          { asset_identifier: asset.asset_id,
-            resource_identifier: asset.identifier,
-            mime_type: asset.media_type,
-            capture_device: asset.capture_device,
-            file_created_date: asset.create_date('%Y-%m-%d %H:%M:%S.%6L'),
-            date_imaged: asset.date_imaged,
-            copyright_holder: asset.copyright,
-            checksum: asset.md5sum }.to_json
+          Pia::AssetCreator.call r.filename, store(r), r.params['is_public']
         end
 
         'should handle post requests'
