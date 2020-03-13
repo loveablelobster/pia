@@ -9,6 +9,8 @@ ENV['RACK_ENV'] = 'test'
 ENV['pia_key'] = 'testkey'
 ENV['pia_secret'] = 'testsecret'
 
+Mongoid.load! File.expand_path('config/mongoid.yaml'), :test
+
 module Rackable
   include Rack::Test::Methods
 
@@ -60,6 +62,7 @@ RSpec.configure do |config|
   end
 
   config.after(:suite) do
+    Repository.destroy_all
     [WORKDIR, IMGSTORE, DOCSTORE].each do |dir|
       FileUtils.rm_r dir if File.exist? dir
     end
@@ -68,6 +71,7 @@ end
 
 require_relative '../../../lib/pia'
 require_relative '../shared_context/with_files'
+require_relative '../shared_context/with_mocks'
 require_relative '../shared_context/with_request'
 require_relative '../shared_context/with_time'
 require_relative '../shared_examples/for_logging'

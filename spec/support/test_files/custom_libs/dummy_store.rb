@@ -7,11 +7,17 @@ require_relative '../../helpers/mockable'
 class DummyStore
   include Mockable
 
-  attr_reader :media_types, :name
+  attr_reader :media_types, :name, :iiif_image_api, :service_url
 
   def initialize(repo, **opts)
+    @iiif_image_api = true
     @media_types = %w[image/jpeg image/tiff]
     @name = 'Test Store'
+    @service_url = 'http://example.org/iiif'
+  end
+
+  def attributes
+    { name: name, service_url: service_url, iiif_image_api: iiif_image_api }
   end
 
   def store(request)

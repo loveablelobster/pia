@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../helpers/mockable'
+
 RSpec.shared_context 'with request', shared_context: :metadata do
   def self.respond_and_log(verb, route)
     before do
@@ -47,7 +49,20 @@ RSpec.shared_context 'with request', shared_context: :metadata do
   let(:mime) { 'image/jpeg' }
   let(:store_path) { 'path/to/stored_file.jpg' }
   let(:store_id) { 'stored_file' }
- 
+
+  let :asset_attributes do
+    { asset_id: store_id,
+      identifier: store_path,
+      copies: [{ repository: backup_repo,
+                 uri: 'path/to/backed_up_file.jpg' }],
+      file_metadata_sets: Mockable.file_metadata,
+      filename: filename,
+      md5sum: checksum,
+      media_type: mime,
+      public: false,
+      repository: store_repo }
+  end
+
   let :response_body do
     { asset_identifier: store_id,
       resource_identifier: store_path,
@@ -59,8 +74,8 @@ RSpec.shared_context 'with request', shared_context: :metadata do
       checksum: checksum }.to_json
   end
 
-  # ===== Mocks
   let(:success) { 'Success!' }
-  
+
+  # ===== Mocks
   let(:logger) { instance_spy 'Logger' }
 end

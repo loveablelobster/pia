@@ -10,8 +10,16 @@ class Repository
 
   # Name of the repository.
   field :name, type: String
-
   validates :name, presence: true
+  index({ name: 1 }, unique: true, name: 'repository_index')
+
+  # +true+ if the service where assets stored in the repository implements the
+  # <em>iiif image api</em>.
+  field :iiif_image_api, type: Boolean, default: false
+
+  # The Base URL where assets stored in the repository represented by +self+ can
+  # be accessed.
+  field :service_url, type: String
 
   # Assets that are stored in the repoistory represented by +self+ as the
   # <em>primary</em> storage (this does not include secondory storage, such as

@@ -29,7 +29,9 @@ RSpec.describe Pia::RepositoryStack::Repository do
       storage_options: {
         nesting_levels: nil,
         folder_limit: nil,
-      }
+      },
+      service_url: 'http://example.com/iiif',
+      iiif_image_api: true
     }
   end
 
@@ -37,6 +39,24 @@ RSpec.describe Pia::RepositoryStack::Repository do
     instance_double 'Pia::RepositoryStack::RepositoryStack',
                     workdir: workdir,
                     repositories: []
+  end
+
+  describe '#attributes' do
+    subject { repo.attributes }
+
+    let :have_keys_and_values do
+      include name: 'Image Store',
+        service_url: 'http://example.com/iiif',
+              iiif_image_api: true
+    end
+
+    it { is_expected.to have_keys_and_values }
+  end
+
+  describe '#iiif_image_api' do
+    subject { repo.iiif_image_api }
+
+    it { is_expected.to be_truthy }
   end
 
   describe '#media_types' do
@@ -74,6 +94,12 @@ RSpec.describe Pia::RepositoryStack::Repository do
 
     it { is_expected.to be_a FilePipeline::Pipeline }
     it { is_expected.to have_attributes file_operations: operations }
+  end
+
+  describe '#service_url' do
+    subject { repo.service_url }
+
+    it { is_expected.to eq 'http://example.com/iiif' }
   end
 
   describe '#storage' do

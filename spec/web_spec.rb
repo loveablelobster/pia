@@ -51,6 +51,8 @@ RSpec.describe PiaApp do
         post 'asset/upload/', body, rack_env
         expect(last_response.body).to eq response_body
       end
+      
+      after(:context) { Asset.destroy_all }
     end
 
     context 'when request is from an unknown host' do
@@ -142,7 +144,23 @@ RSpec.describe PiaApp do
     end
   end
 
-  describe 'GET asset/:id/fullsize'
+  describe 'GET asset/:id/fullsize' do
+    before do
+      Asset.create! asset_attributes
+      get "/asset/#{store_id}/fullsize"
+    end
+
+    let(:backup_repo) { Repository.find_by name: 'Test Backup' }
+    let(:store_repo) { Repository.find_by name: 'Test Store' }
+
+    it do
+      p last_response
+    end
+
+    after do
+      Asset.destroy_all
+    end
+  end
 
   describe 'GET asset/:id/thumbnail'
 

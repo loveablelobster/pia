@@ -127,7 +127,11 @@ module Pia
 
     # Returns the Repository object for +name+.
     def repository(name)
-      @repository_model.find_or_create_by name: name
+      @repository_model.find_by name: name
+    # TODO: raise custom error that can be rescued up stack, return http
+    # response with proper error message
+    rescue Mongoid::Errors::DocumentNotFound => e
+      raise e.message
     end
   end
 end

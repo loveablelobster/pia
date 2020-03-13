@@ -13,6 +13,10 @@ module Pia
     # Repository objects are storage units that manage a storage directory and
     # can automatically process files that are being stored.
     class Repository
+      # +true+ if the service where assets stored in the repository implements the
+      # <em>iiif image api</em>.
+      attr_reader :iiif_image_api
+
       # Array of media (MIME) types (Strings) that are supported by the
       # repository.
       attr_reader :media_types
@@ -23,6 +27,16 @@ module Pia
       # FilePipeline::Pipeline object configured with the file processing
       # required for the repository.
       attr_reader :processing
+
+      # Hash containing the components for the base URL for the service where
+      # assets stored in +self+ can be accessed:
+      # * <tt>:scheme</tt> - <tt>'http'</tt> or <tt>'https'</tt>.
+      # * <tt>:server</tt> - name of the server (e.g. <tt>'example.com'</tt>).
+      # * <tt>:prefix</tt> - path on the server (e.g. <tt>'iiif'</tt>).
+      #
+      # The examples above would result in the URL
+      # <tt>http://example.com/iiif/</tt>.
+      attr_reader :service_url
 
       # FolderStash::FileUsher object that manages the storage directory.
       attr_reader :storage
@@ -46,13 +60,22 @@ module Pia
       #   files are to be stored.
       # * <tt>:storage_options</tt> - Hash with options to set up a
       #   FolderStash::FileUsher object that will handle storage management.
+      # * <tt>:service_url</tt> - Hash with options to configure the base URL
+      #   where files stored in the repository can be accessed.
       def initialize(stack, **opts)
         mimes = opts.fetch :media_types, []
+        @iiif_image_api = opts.delete :iiif_image_api
         @media_types = Set.new mimes
         @name = opts.fetch :name, stack.repositories.count
+        @service_url = opts.delete :service_url
         @stack = stack
         self.processing = opts
         self.storage = opts
+      end
+
+      # Returns a Hash with attributes for +self+.
+      def attributes(keys = %i[name service_url iiif_image_api])
+        keys.each_with_object({}) { |key, hsh| hsh[key] = public_send key }
       end
 
       # Will process +file+ as configured in #processing and store the processed

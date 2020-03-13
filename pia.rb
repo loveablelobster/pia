@@ -37,6 +37,10 @@ class PiaApp < Roda
   plugin Pia::RepositoryStack
   use Rack::Access, '/asset/upload/' => PiaApp.opts[:hosts]
 
+  repositories.each do |repo|
+    Repository.find_or_create_by(repo.attributes)
+  end
+
   route do |r|
     r.root do
       'Server is running!'
@@ -60,11 +64,12 @@ class PiaApp < Roda
       end
 
       r.on String do |id|
-        # TODO: find asset
+        asset = Asset.find id
 
         r.get do
+          # halt unless asset.public || validate_timestamp.authorized
           r.is 'fullsize' do
-            "#{id} in full size"
+            "#{asset} in full size"
           end
 
           r.is 'thumbnail' do

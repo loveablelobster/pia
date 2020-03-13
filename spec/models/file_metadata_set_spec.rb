@@ -5,8 +5,6 @@ require_relative '../../models/file_metadata_set'
 require_relative '../../models/repository'
 require_relative '../support/helpers/mockable'
 
-Mongoid.load! File.expand_path('config/mongoid.yaml'), :test
-
 RSpec.describe FileMetadataSet, type: :model do
   it { is_expected.to be_mongoid_document }
   it { is_expected.to have_timestamps }

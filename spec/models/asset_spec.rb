@@ -6,24 +6,22 @@ require_relative '../../models/file_metadata_set'
 require_relative '../../models/repository'
 require_relative '../support/helpers/mockable'
 
-Mongoid.load! File.expand_path('config/mongoid.yaml'), :test
-
 RSpec.describe Asset, type: :model do
-  let :asset do
-    described_class.create! asset_id: asset_id,
-                            identifier: identifier,
+  before :context do
+    repository = Repository.new name: 'Example Repository'
+
+    described_class.create! asset_id: 'where_there_be_a_UUID',
+                            identifier: 'path/to/where_there_be_a_UUID',
                             public: false,
-                            filename: filename,
-                            media_type: media_type,
-                            md5sum: checksum,
-                            repository: primary_store,
+                            filename: 'i_was_once_named.txt',
+                            media_type: 'application/text',
+                            md5sum: 'a_md5_checksum',
+                            repository: repository,
                             file_metadata_sets: Mockable.file_metadata
   end
 
-  let :primary_store do
-    Repository.new name: repository
-  end
-
+  let(:asset) { Asset.find asset_id }
+  let(:primary_store) { Repository.find_by name: repository }
   let(:asset_id) { 'where_there_be_a_UUID' }
   let(:identifier) { "path/to/#{asset_id}" }
   let(:filename) { 'i_was_once_named.txt' }
@@ -34,7 +32,6 @@ RSpec.describe Asset, type: :model do
   let(:dropped_metadata) { Mockable.file_metadata :dropped }
   let(:withheld_metadata) { Mockable.file_metadata :withheld }
 
-  before { Asset.destroy_all }
 
   it { is_expected.to be_mongoid_document }
   it { is_expected.to have_timestamps }
@@ -146,5 +143,9 @@ RSpec.describe Asset, type: :model do
       it { is_expected.to be_a Time }
       it { is_expected.to eq stored_metadata['DateTimeOriginal'].to_s }
     end
+  end
+
+  after :context do
+    Asset.destroy_all
   end
 end

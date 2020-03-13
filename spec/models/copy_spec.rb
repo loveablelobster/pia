@@ -4,8 +4,6 @@ require_relative '../../models/asset'
 require_relative '../../models/copy'
 require_relative '../../models/file_metadata_set'
 
-Mongoid.load! File.expand_path('config/mongoid.yaml'), :test
-
 RSpec.describe Copy, type: :model do
   it { is_expected.to be_mongoid_document }
   it { is_expected.to have_timestamps }
