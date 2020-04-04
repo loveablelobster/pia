@@ -2,6 +2,10 @@
 
 module Pia
   module RepositoryStack
+    #
+    ATTRIBUTES = %i[default_output_format name service_url iiif_image_api]
+      .freeze
+
     # Array of file metadata setnames for Pia::Model::FileMetadataSet
     # documents to be included into the Pia::Model::Asset document.
     METADATA_SETS = %w[dropped redacted].freeze
@@ -13,6 +17,9 @@ module Pia
     # Repository objects are storage units that manage a storage directory and
     # can automatically process files that are being stored.
     class Repository
+      #
+      attr_reader :default_output_format
+
       # +true+ if the service where assets stored in the repository implements the
       # <em>iiif image api</em>.
       attr_reader :iiif_image_api
@@ -74,7 +81,7 @@ module Pia
       end
 
       # Returns a Hash with attributes for +self+.
-      def attributes(keys = %i[name service_url iiif_image_api])
+      def attributes(keys = ATTRIBUTES)
         keys.each_with_object({}) { |key, hsh| hsh[key] = public_send key }
       end
 

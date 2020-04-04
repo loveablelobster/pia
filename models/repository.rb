@@ -19,7 +19,10 @@ class Repository
 
   # The Base URL where assets stored in the repository represented by +self+ can
   # be accessed.
-  field :service_url, type: String
+  field :service_url, as: :fullsize, type: String
+
+  # The default media type of files served by thg repository.
+  field :default_output_format, type: String
 
   # Assets that are stored in the repoistory represented by +self+ as the
   # <em>primary</em> storage (this does not include secondory storage, such as

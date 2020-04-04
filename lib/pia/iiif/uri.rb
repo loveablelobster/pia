@@ -132,6 +132,11 @@ module Pia
         "#{quality}.#{format}"
       end
 
+      # Returns a String for the full URI.
+      def to_s
+        "#{scheme}://#{host}#{path}"
+      end
+
       # Returns an URI object.
       def to_uri
         uri_class = ::URI.const_get scheme.upcase

@@ -67,18 +67,25 @@ class PiaApp < Roda
         asset = Asset.find id
 
         r.get do
+          asset_uri = Pia::AssetRedirect.new asset
+
           # halt unless asset.public || validate_timestamp.authorized
           r.is 'fullsize' do
-            "#{asset} in full size"
+            r.redirect asset_uri.fullsize
           end
 
           r.is 'thumbnail' do
-            "#{id} as thumbnail"
+            size = r.params.fetch('scale', 128).to_i
+            r.redirect asset_uri.thumbnail(size: size)
           end
 
           # iiif
-          r.on String, String, String, String do |region, size, rotation, quality_format|
-            "#{id}/#{region}/#{size}/#{rotation}/#{quality_format}"
+          r.on String,
+               String,
+               String,
+               String do |region, size, rotation, quality_format|
+            quality, format = quality_format.split '.'
+            r.redirect asset_uri.iiif(region, size, rotation, quality, format)
           end
         end
 

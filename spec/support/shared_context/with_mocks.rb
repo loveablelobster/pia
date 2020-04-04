@@ -24,7 +24,9 @@ RSpec.shared_context 'with mocks', shared_context: :metadata do
     instance_double 'Repository', 'Test Store',
                     name: 'Test Store',
                     iiif_image_api: true,
-                    service_url: 'http://example.org/iiif'
+                    service_url: 'http://example.org/iiif',
+                    fullsize: 'http://exapmle.org/iiif',
+                    default_output_format: 'jpg'
   end
 
   let(:backup_repo) { instance_double 'Repository', 'Test Backup' }

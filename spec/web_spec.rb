@@ -144,17 +144,51 @@ RSpec.describe PiaApp do
     end
   end
 
-  describe 'GET asset/:id/fullsize' do
-    before do
-      Asset.create! asset_attributes
-      get "/asset/#{store_id}/fullsize"
-    end
+  describe 'GET asset/:id' do
+    before { Asset.create! asset_attributes }
 
     let(:backup_repo) { Repository.find_by name: 'Test Backup' }
     let(:store_repo) { Repository.find_by name: 'Test Store' }
+    let(:region) { 'full' }
+    let(:rotation) { '0' }
+    let(:quality) { 'default' }
+    let(:format) { 'jpg' }
+    let(:response_header) { a_hash_including 'Location' => target_uri }
 
-    it do
-      p last_response
+    let :target_uri do
+      ['http://example.com/iiif', store_path, region, size, rotation,
+       "#{quality}.#{format}"].join '/'
+    end
+
+    describe '/fullsize' do
+      before { get "/asset/#{store_id}/fullsize" }
+
+      let(:size) { 'max' }
+
+      it { is_expected.to have_attributes status: 302, header: response_header }
+    end
+
+    describe 'GET asset/:id/thumbnail' do
+      before { get "/asset/#{store_id}/thumbnail?scale=128" }
+
+      let(:size) { '128,' }
+
+      it { is_expected.to have_attributes status: 302, header: response_header }
+    end
+
+    describe 'GET asset/:id/:region/:size/:rotation/:quality.:format' do
+      before do
+        get ['/asset', store_id, region, size, rotation, resource].join('/')
+      end
+
+      let(:region) { '20,20,1280,960' }
+      let(:size) { '1024,768' }
+      let(:rotation) { '!0' }
+      let(:quality) { 'bitonal' }
+      let(:format) { 'tif' }
+      let(:resource) { [quality, format].join('.') }
+
+      it { is_expected.to have_attributes status: 302, header: response_header }
     end
 
     after do
@@ -162,9 +196,6 @@ RSpec.describe PiaApp do
     end
   end
 
-  describe 'GET asset/:id/thumbnail'
-
-  describe 'GET asset/:id/:region/:size/:rotation/:quality.:format'
 
   describe 'DELETE asset/:id/delete'
 end

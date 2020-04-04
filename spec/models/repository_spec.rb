@@ -34,5 +34,7 @@ RSpec.describe Repository, type: :model do
   end
 
   it { is_expected.to have_field(:service_url).of_type String }
+  it { is_expected.to have_field(:service_url).with_alias :fullsize }
+  it { is_expected.to have_field(:default_output_format).of_type String }
   it { is_expected.to have_many(:assets).as_inverse_of :repository }
 end

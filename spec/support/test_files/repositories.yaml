@@ -19,6 +19,7 @@ repositories:
     storage_directory: spec/support/test_files/imgstore
     service_url: 'http://example.com/iiif'
     iiif_image_api: true
+    default_output_format: jpg
   -
     name: Document Store
     media_types:
