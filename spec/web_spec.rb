@@ -4,6 +4,7 @@ require_relative '../pia'
 
 RSpec.describe PiaApp do
   include_context 'with files'
+  include_context 'with mocks'
   include_context 'with request'
   include_context 'with time'
 
@@ -144,58 +145,110 @@ RSpec.describe PiaApp do
     end
   end
 
-  describe 'GET asset/:id' do
-    before { Asset.create! asset_attributes }
-
+  describe 'asset/:id' do
     let(:backup_repo) { Repository.find_by name: 'Test Backup' }
     let(:store_repo) { Repository.find_by name: 'Test Store' }
-    let(:region) { 'full' }
-    let(:rotation) { '0' }
-    let(:quality) { 'default' }
-    let(:format) { 'jpg' }
-    let(:response_header) { a_hash_including 'Location' => target_uri }
+    describe 'GET' do
+      before { Asset.create! asset_attributes }
 
-    let :target_uri do
-      ['http://example.com/iiif', store_path, region, size, rotation,
-       "#{quality}.#{format}"].join '/'
-    end
+      let(:region) { 'full' }
+      let(:rotation) { '0' }
+      let(:quality) { 'default' }
+      let(:format) { 'jpg' }
+      let(:response_header) { a_hash_including 'Location' => target_uri }
 
-    describe '/fullsize' do
-      before { get "/asset/#{store_id}/fullsize" }
-
-      let(:size) { 'max' }
-
-      it { is_expected.to have_attributes status: 302, header: response_header }
-    end
-
-    describe 'GET asset/:id/thumbnail' do
-      before { get "/asset/#{store_id}/thumbnail?scale=128" }
-
-      let(:size) { '128,' }
-
-      it { is_expected.to have_attributes status: 302, header: response_header }
-    end
-
-    describe 'GET asset/:id/:region/:size/:rotation/:quality.:format' do
-      before do
-        get ['/asset', store_id, region, size, rotation, resource].join('/')
+      let :target_uri do
+        ['http://example.com/iiif', store_path, region, size, rotation,
+         "#{quality}.#{format}"].join '/'
       end
 
-      let(:region) { '20,20,1280,960' }
-      let(:size) { '1024,768' }
-      let(:rotation) { '!0' }
-      let(:quality) { 'bitonal' }
-      let(:format) { 'tif' }
-      let(:resource) { [quality, format].join('.') }
+      describe '/fullsize' do
+        before { get "/asset/#{store_id}/fullsize" }
 
-      it { is_expected.to have_attributes status: 302, header: response_header }
+        let(:size) { 'max' }
+
+        it { is_expected.to have_attributes status: 302, header: response_header }
+      end
+
+      describe 'GET asset/:id/thumbnail' do
+        before { get "/asset/#{store_id}/thumbnail?scale=128" }
+
+        let(:size) { '128,' }
+
+        it { is_expected.to have_attributes status: 302, header: response_header }
+      end
+
+      describe 'GET asset/:id/:region/:size/:rotation/:quality.:format' do
+        before do
+          get ['/asset', store_id, region, size, rotation, resource].join('/')
+        end
+
+        let(:region) { '20,20,1280,960' }
+        let(:size) { '1024,768' }
+        let(:rotation) { '!0' }
+        let(:quality) { 'bitonal' }
+        let(:format) { 'tif' }
+        let(:resource) { [quality, format].join('.') }
+
+        it { is_expected.to have_attributes status: 302, header: response_header }
+      end
+
+      after { Asset.destroy_all }
     end
 
-    after do
-      Asset.destroy_all
+    describe 'DELETE asset/:id/delete' do
+      before { Asset.create! asset_attributes }
+        subject(:delete_asset) { delete "/asset/#{store_id}/delete", body }
+
+        context 'when the request is valid' do
+          it do
+            delete_asset
+            expect(last_response).to be_ok
+          end
+
+          it do
+            expect { delete_asset }
+              .to change { Asset.where(asset_id: store_id).exists? }
+              .from(be_truthy).to(be_falsey)
+          end
+
+          it 'logs'
+
+          it 'returns JSON'
+        end
+
+      context 'when request is from an unknown host' do
+        before { env 'REMOTE_ADDR', '123.123.123.123' }
+
+        let(:message) { '' }
+        let(:status) { 403 }
+
+        it 'returns 403'
+      end
+
+      context 'with invalid timestamp' do
+        before { body[:timestamp] = timestamp two_hours_ago }
+
+        let(:message) { '{"message":"Bad request. Ignored."}' }
+        let(:status) { 111 }
+
+        it 'returns 111 bad request'
+      end
+
+      context 'when filename is missing' do
+        before { body.delete :filename }
+
+        let(:message) { '{"message":"Bad request. Ignored."}' }
+        let(:status) { 111 }
+
+        it 'returns 111 bad request'
+      end
+
+      context 'with a bad HMAC signature' do
+        it 'returns 401 forbidden'
+      end
+
+      after { Asset.destroy_all }
     end
   end
-
-
-  describe 'DELETE asset/:id/delete'
 end

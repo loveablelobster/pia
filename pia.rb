@@ -92,6 +92,7 @@ class PiaApp < Roda
         r.delete do
           r.is 'delete' do
             r.validate_timestamp
+            asset.delete
             "should delete #{id} filename: #{r['filename']} timestamp: #{r['timestamp']}"
           end
         end
